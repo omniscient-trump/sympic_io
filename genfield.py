@@ -85,14 +85,14 @@ def gen_coils(num_coils_in_group,current,coils,radi,zloc):
         patch+=1
         offset+=n
     return (I,N,R,Z)
-def savefield(Bx,By,Bz,dim,U)
+def savefield(Bx,By,Bz,dim,dl,U):
     #single coil test
     #Bxp,Byp,Bzp=siglecoil_field1(100,10,0.2,X,Y,Z-2);
     (Nx,Ny,Nz)=dim
     B=np.zeros((3,Nx,Ny,Nz))
-    B[0,...]=Bx*(dz/dx)
-    B[1,...]=By*(dz/dy)
-    B[2,...]=Bz
+    B[0,...]=Bx*(dl[0]*dl[2])
+    B[1,...]=By*(dl[2]*dl[1])
+    B[2,...]=Bz*(dl[0]*dl[1])
     Version = 0;
     Type = 7;
     Dim= 4;
@@ -123,4 +123,5 @@ B[0,:Nx,:,Nz:]=np.flip(Bxp,axis=0)
 B[2,:Nx,:,Nz:]=np.flip(Bzp,axis=0) 
 '''
 
-
+def tanhdist(a,b,c,d,x):
+    return a*np.tanh(b*(x-c))+d
