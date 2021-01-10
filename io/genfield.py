@@ -24,7 +24,7 @@ def siglecoil_fB(I0,N_coil,r0,x,y,z):
     c0=4e-7; # mu0/pi=4e-7
     I0=I0*N_coil; 
     # current, unit: A
-    C=c0*I0;
+    C=c0*I0
     # Set field for single coil
     rho=(x**2+y**2)**0.5
     r=(x**2+y**2+z**2)**0.5
