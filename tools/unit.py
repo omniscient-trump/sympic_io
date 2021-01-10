@@ -8,7 +8,7 @@ me = 9.10000000000000006e-31
 # base units 4
 
 
-def gen_unit(REAL_DX):
+def gen_unit(REAL_DX,ratio,npg,nref):
     unit = {}
     # m
     unit['LENGTH'] = REAL_DX
@@ -43,6 +43,9 @@ def gen_unit(REAL_DX):
     const['mu0'] = 1.
     const['epsi0'] = 1.
     const['c'] = 1.
+    const['rato'] = ratio.
+    const['npg'] = npg.
+    const['nref'] = nref
     return unit, const
 
 
@@ -72,22 +75,36 @@ def Oci(m, z, B, U):
 # temp
 
 
-def Ek2Tev(Ek, v, n, npg, n_ref, m, U):
+def Ek2Tev(Ek, v, n, m, U):
     n[n == 0] = 1
+    npg=U[1]['npg']
+    nref=U[1]['nref']
     # scale is weight of a macro particle to real particle
-    scale = U[0]['LENGTH']**3*n_ref/npg
+    scale = U[0]['LENGTH']**3*(np.sum(U[1]['ratio']))*n_ref/npg
     # first 3 elements storage 1/2*m*v**2, where m is macro particle mass = real me * scale
     # in other word, real summation of energy in this volume
     # v v sq... obtained by sum macro particles particles is not uniform
     # sigma (all macro particle * me * scale * v_mac)
     # so have to devide n_macro to get real ava v that one macro particle represented.
     # a particle (no mater macro or real it is same) averaged v_sq
-    Ek_per_pat = Ek/n/scale
+    Vk_per_pat = 2*Ek/n/scale/m
     # average velocity aka drift velocity
     v_per_pat = v/n
     # sum_v=0
     # 6th is number density, number of macro particle
     # sum 3 dir
     #temperature in kev
-    KbT0 = 2*m*(Ek_per_part-v_per_pat**2)*U[0]['ENERGY'] / 1.6e-19/1000
+    KbT0 = m*(Vk_per_pat-v_per_pat**2)*U[0]['ENERGY'] / 1.6e-19
     return KbT0
+
+
+def EN2T(EN,U):
+    Tex=Ek2Tev(EN[0,...],0,EN[6,...],1,U)
+    Tey=Ek2Tev(EN[1,...],0,EN[6,...],1,U)
+    Tez=Ek2Tev(EN[2,...],0,EN[6,...],1,U)
+    Tix=Ek2Tev(EN[7,...],0,EN[13,...],1836,U)
+    Tiy=Ek2Tev(EN[8,...],0,EN[13,...],1836,U)
+    Tiz=Ek2Tev(EN[9,...],0,EN[13,...],1836,U)
+    Te=[Tex,Tey,Tez]
+    Ti=[Tix,Tiy,Tiz]
+    return (Te,Ti)
