@@ -8,7 +8,7 @@ me = 9.10000000000000006e-31
 # base units 4
 
 
-def gen_unit(REAL_DX,ratio,npg,nref):
+def gen_unit(REAL_DX):
     unit = {}
     # m
     unit['LENGTH'] = REAL_DX
@@ -43,9 +43,6 @@ def gen_unit(REAL_DX,ratio,npg,nref):
     const['mu0'] = 1.
     const['epsi0'] = 1.
     const['c'] = 1.
-    const['rato'] = ratio.
-    const['npg'] = npg.
-    const['nref'] = nref
     return unit, const
 
 
@@ -75,12 +72,10 @@ def Oci(m, z, B, U):
 # temp
 
 
-def Ek2Tev(Ek, v, n, m, U):
+def Ek2Tev(Ek, v, n, m, U,npg,nref,ratio):
     n[n == 0] = 1
-    npg=U[1]['npg']
-    nref=U[1]['nref']
     # scale is weight of a macro particle to real particle
-    scale = U[0]['LENGTH']**3*(np.sum(U[1]['ratio']))*n_ref/npg
+    scale = U[0]['LENGTH']**3*(np.sum(ratio))*n_ref/npg
     # first 3 elements storage 1/2*m*v**2, where m is macro particle mass = real me * scale
     # in other word, real summation of energy in this volume
     # v v sq... obtained by sum macro particles particles is not uniform
@@ -98,13 +93,13 @@ def Ek2Tev(Ek, v, n, m, U):
     return KbT0
 
 
-def EN2T(EN,U):
-    Tex=Ek2Tev(EN[0,...],0,EN[6,...],1,U)
-    Tey=Ek2Tev(EN[1,...],0,EN[6,...],1,U)
-    Tez=Ek2Tev(EN[2,...],0,EN[6,...],1,U)
-    Tix=Ek2Tev(EN[7,...],0,EN[13,...],1836,U)
-    Tiy=Ek2Tev(EN[8,...],0,EN[13,...],1836,U)
-    Tiz=Ek2Tev(EN[9,...],0,EN[13,...],1836,U)
+def EN2T(EN,U,npg,nref,ratio):
+    Tex=Ek2Tev(EN[0,...],0,EN[6,...],1,U,npg,nref,ratio)
+    Tey=Ek2Tev(EN[1,...],0,EN[6,...],1,U,npg,nref,ratio)
+    Tez=Ek2Tev(EN[2,...],0,EN[6,...],1,U,npg,nref,ratio)
+    Tix=Ek2Tev(EN[7,...],0,EN[13,...],1836,U,npg,nref,ratio)
+    Tiy=Ek2Tev(EN[8,...],0,EN[13,...],1836,U,npg,nref,ratio)
+    Tiz=Ek2Tev(EN[9,...],0,EN[13,...],1836,U,npg,nref,ratio)
     Te=[Tex,Tey,Tez]
     Ti=[Tix,Tiy,Tiz]
     return (Te,Ti)
